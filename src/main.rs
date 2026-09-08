@@ -3,6 +3,8 @@ use axum::{Json, Router, routing::{get,post}, serve};
 pub mod auth;
 pub mod parts;
 pub mod db;
+pub mod model;
+pub mod schema;
 use crate::parts::create_product::create_part;
 
 #[tokio::main]
