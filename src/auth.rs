@@ -1,5 +1,5 @@
-use jsonwebtoken::{DecodingKey, EncodingKey, Validation, decode};
 use chrono::{Duration, Utc};
+use jsonwebtoken::{DecodingKey, Validation, decode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -24,9 +24,7 @@ impl Claims {
 
 #[derive(Clone)]
 pub struct JwtService {
-    pub encoding_key: EncodingKey,
     pub decoding_key: DecodingKey,
-    pub access_token_till: Duration,
 }
 
 impl JwtService {
