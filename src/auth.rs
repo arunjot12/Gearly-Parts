@@ -28,6 +28,12 @@ pub struct JwtService {
 }
 
 impl JwtService {
+    pub fn new(secret: &str) -> Self {
+        Self {
+            decoding_key: DecodingKey::from_secret(secret.as_bytes()),
+        }
+    }
+
     pub fn verify_token(&self, token: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
         let mut validation = Validation::default();
         validation.validate_exp = true;

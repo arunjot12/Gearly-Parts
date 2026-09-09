@@ -5,12 +5,25 @@ pub mod parts;
 pub mod db;
 pub mod model;
 pub mod schema;
-use crate::parts::create_product::create_part;
+use crate::{auth::JwtService, db::{create_pool,DbPool}, parts::api::create_part};
+
+#[derive(Clone)]
+struct AppState {
+    db_pool: DbPool,
+    jwt_service: JwtService
+}
 
 #[tokio::main]
 async fn main(){
+
+    let jwt = std::env::var("JwtService").expect("JWT secret needs to set");
+
+    let jwt_service = JwtService::new(&jwt);
+    let pool = create_pool();
+
+    let state = AppState { db_pool: pool, jwt_service: jwt_service };
     let app = Router::new().
-    route("/create_product",post(create_part));
+    route("/create_product",post(create_part)).with_state(state);
 
     let port: u16 = std::env::var("PORT")
     .ok()
