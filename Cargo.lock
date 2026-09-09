@@ -504,7 +504,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "gearly-parts"
+name = "gearly-product"
 version = "0.1.0"
 dependencies = [
  "axum",

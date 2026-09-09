@@ -6,9 +6,10 @@ diesel::table! {
         #[max_length = 255]
         name -> Varchar,
         price -> Integer,
-        descri -> Nullable<Text>,
+        #[max_length = 255]
+        descri -> Varchar,
         #[max_length = 100]
-        part_number -> Nullable<Varchar>,
+        part_number -> Varchar,
         created_at -> Nullable<Timestamp>,
         updated_at -> Nullable<Timestamp>,
     }

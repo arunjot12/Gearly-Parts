@@ -1,11 +1,11 @@
 use tokio::net::TcpListener;
-use axum::{Json, Router, routing::{get,post}, serve};
+use axum::{Json, Router, middleware, routing::{get,post}, serve};
 pub mod auth;
 pub mod parts;
 pub mod db;
 pub mod model;
 pub mod schema;
-use crate::{auth::JwtService, db::{create_pool,DbPool}, parts::api::create_part};
+use crate::{auth::auth::JwtService, auth::middleware::auth_middleware, db::{create_pool,DbPool}, parts::api::create_part};
 
 #[derive(Clone)]
 struct AppState {
@@ -15,7 +15,6 @@ struct AppState {
 
 #[tokio::main]
 async fn main(){
-
     let jwt = std::env::var("JwtService").expect("JWT secret needs to set");
 
     let jwt_service = JwtService::new(&jwt);
@@ -23,7 +22,9 @@ async fn main(){
 
     let state = AppState { db_pool: pool, jwt_service: jwt_service };
     let app = Router::new().
-    route("/create_product",post(create_part)).with_state(state);
+    route("/create_product",post(create_part))
+    .layer(middleware::from_fn_with_state(state.clone(),auth_middleware ))
+    .with_state(state);
 
     let port: u16 = std::env::var("PORT")
     .ok()
