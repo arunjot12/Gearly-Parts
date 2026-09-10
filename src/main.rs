@@ -1,11 +1,11 @@
 use tokio::net::TcpListener;
 use axum::{Json, Router, middleware, routing::{get,post}, serve};
 pub mod auth;
-pub mod parts;
+pub mod product;
 pub mod db;
 pub mod model;
 pub mod schema;
-use crate::{auth::auth::JwtService, auth::middleware::auth_middleware, db::{create_pool,DbPool}, parts::api::create_part};
+use crate::{auth::auth::JwtService, auth::middleware::auth_middleware, db::{create_pool,DbPool}, product::api::create_part};
 
 #[derive(Clone)]
 pub struct AppState {

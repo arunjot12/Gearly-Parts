@@ -16,5 +16,4 @@ next: Next,
     let claims = state.jwt_service.verify_token(auth).map_err(|_| StatusCode::UNAUTHORIZED)?;
     request.extensions_mut().insert(claims);
     Ok(next.run(request).await)
-
 }
