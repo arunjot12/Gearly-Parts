@@ -16,7 +16,7 @@ pub async fn create_part(
 
     let result = connection.
         interact(
-        move | connection | handle_product_insertion(connection, &payload))
+        move | connection | handle_product_insertion(connection, payload))
         .await 
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR,e.to_string()));
 

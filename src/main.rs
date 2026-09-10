@@ -8,7 +8,7 @@ pub mod schema;
 use crate::{auth::auth::JwtService, auth::middleware::auth_middleware, db::{create_pool,DbPool}, parts::api::create_part};
 
 #[derive(Clone)]
-struct AppState {
+pub struct AppState {
     db_pool: DbPool,
     jwt_service: JwtService
 }

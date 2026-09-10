@@ -1,5 +1,5 @@
 use diesel::{ExpressionMethods, MysqlConnection, OptionalExtension, QueryDsl, RunQueryDsl, SelectableHelper, dsl::insert_into};
-use crate::{schema::product, model::Product};
+use crate::{model::{NewProduct, Product}, schema::product};
 use axum::http::StatusCode;
 use thiserror::Error;
 
@@ -12,7 +12,7 @@ pub enum AppError{
     Database(#[from]diesel::result::Error)
 }
 
-pub async fn handle_product_insertion(connection: &mut MysqlConnection, part:Product)  -> Result<String, AppError> {
+pub fn handle_product_insertion(connection: &mut MysqlConnection, part:NewProduct)  -> Result<String, AppError> {
     let check = product::table
     .select(Product::as_select())
     .filter(product::part_number.eq(&part.part_number))
