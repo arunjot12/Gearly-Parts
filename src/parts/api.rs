@@ -14,9 +14,10 @@ pub async fn create_part(
         .await
         .expect("Failed to get DB connection from pool");
 
-    let result = connection.interact(
-        move | connection | handle_product_insertion(connection, &payload.part_number))
+    let result = connection.
+        interact(
+        move | connection | handle_product_insertion(connection, &payload))
         .await 
-        .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR(e.to_string()));
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR,e.to_string()));
 
 }
