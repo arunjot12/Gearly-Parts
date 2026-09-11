@@ -10,7 +10,7 @@ dotenv = "0.15.0"
 tokio = {version = "1.52.3", features =["full"]}
 reqwest = { version = "0.13.4", features = ["json"] }
 jsonwebtoken = { version = "11.0.0", features = ["aws_lc_rs"]}
-chrono = "0.4.45"
+chrono = {version = "0.4.45", features = ["serde"]}
 serde = "1.0.229"
 deadpool-diesel = { version = "0.6.1", features = ["mysql"] }
 anyhow = "1.0.104"

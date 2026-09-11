@@ -5,7 +5,7 @@ pub mod product;
 pub mod db;
 pub mod model;
 pub mod schema;
-use crate::{auth::auth::JwtService, auth::middleware::auth_middleware, db::{create_pool,DbPool}, product::api::create_part};
+use crate::{auth::{auth::JwtService, middleware::auth_middleware}, db::{DbPool, create_pool}, product::api::{create_part,get_product, get_products}};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -21,8 +21,10 @@ async fn main(){
     let pool = create_pool();
 
     let state = AppState { db_pool: pool, jwt_service: jwt_service };
-    let app = Router::new().
-    route("/create_product",post(create_part))
+    let app = Router::new()
+    .route("/create_product",post(create_part))
+    .route("/get_product",get(get_product))
+    .route("/get_products",get(get_products))
     .layer(middleware::from_fn_with_state(state.clone(),auth_middleware ))
     .with_state(state);
 

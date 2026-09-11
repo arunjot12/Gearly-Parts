@@ -11,7 +11,7 @@ pub struct NewProduct{
      pub part_number : String,
 }
 
-#[derive(Debug, Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::product)]
 pub struct Product {
      pub id: i32,
@@ -22,13 +22,3 @@ pub struct Product {
      pub created_at: Option<NaiveDateTime>,
      pub updated_at: Option<NaiveDateTime>
 }
-
-     //    id -> Integer,
-     //    #[max_length = 255]
-     //    name -> Varchar,
-     //    price -> Integer,
-     //    descri -> Nullable<Text>,
-     //    #[max_length = 100]
-     //    part_number -> Nullable<Varchar>,
-     //    created_at -> Nullable<Timestamp>,
-     //    updated_at -> Nullable<Timestamp>,

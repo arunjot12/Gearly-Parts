@@ -4,8 +4,7 @@ use crate::{
 };
 use axum::Json;
 use diesel::{
-    ExpressionMethods, MysqlConnection, OptionalExtension, QueryDsl, RunQueryDsl, SelectableHelper,
-    dsl::insert_into,
+    ExpressionMethods, MysqlConnection, OptionalExtension, QueryDsl, RunQueryDsl, SelectableHelper, dsl::insert_into
 };
 use thiserror::Error;
 
@@ -41,12 +40,21 @@ pub fn handle_product_insertion(
         Err(e) => return Err(AppError::Database(e)),
     }
 }
+pub fn handle_products(
+    connection: &mut MysqlConnection,
+    product_id: Option<i32>,
+) -> Result<Json<Vec<Product>>, String> {
+    let products = match product_id {
+        Some(id) => product::table
+            .select(Product::as_select())
+            .filter(product::id.eq(id))
+            .load::<Product>(connection),
 
-pub fn handle_products(connection: &mut MysqlConnection) -> Result<Json<Vec<Product>>, String>{
-    let products = product::table
-    .select(Product::as_select())
-    .load::<Product>(connection)
-    .map_err(|e|e.to_string())
-    ;
-    Ok(Json(products?))
+        None => product::table
+            .select(Product::as_select())
+            .load::<Product>(connection),
+    }
+    .map_err(|e| e.to_string())?;
+
+    Ok(Json(products))
 }
