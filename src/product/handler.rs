@@ -1,5 +1,5 @@
 use crate::{
-    model::{NewProduct, Product},
+    model::{NewProduct, UpdateProduct,Product},
     schema::product,
 };
 use axum::Json;
@@ -67,4 +67,19 @@ pub fn delete_product_db(
         product::table.filter(product::id.eq(product_id)),
     )
     .execute(connection)
+}
+
+pub fn update_product_db(
+    connection: &mut MysqlConnection,
+    product_id: &i32,
+    payload: UpdateProduct,
+) -> QueryResult<usize> {
+    diesel::update(product::table.filter(product::id.eq(product_id)))
+        .set((
+            product::name.eq(payload.name),
+            product::price.eq(payload.price),
+            product::descri.eq(payload.descri),
+            product::part_number.eq(payload.part_number),
+        ))
+        .execute(connection)
 }

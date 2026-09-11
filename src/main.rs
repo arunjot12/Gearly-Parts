@@ -1,11 +1,12 @@
+use diesel::update;
 use tokio::net::TcpListener;
-use axum::{Json, Router, middleware, routing::{get,post}, serve};
+use axum::{Json, Router, middleware, routing::{get,post,put}, serve};
 pub mod auth;
 pub mod product;
 pub mod db;
 pub mod model;
 pub mod schema;
-use crate::{auth::{auth::JwtService, middleware::auth_middleware}, db::{DbPool, create_pool}, product::api::{create_part, delete_product, get_product, get_products}};
+use crate::{auth::{auth::JwtService, middleware::auth_middleware}, db::{DbPool, create_pool}, product::api::{create_part, delete_product, update_product, get_product, get_products}};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -26,6 +27,7 @@ async fn main(){
     .route("/get_product",get(get_product))
     .route("/get_products",get(get_products))
     .route("/delete_product",post(delete_product))
+    .route("/update_product/{id}",put(update_product))
     .layer(middleware::from_fn_with_state(state.clone(),auth_middleware ))
     .with_state(state);
 

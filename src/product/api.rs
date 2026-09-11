@@ -1,9 +1,7 @@
 use crate::{
-    AppState,
-    model::{NewProduct, Product},
-    product::handler::{handle_product_insertion,delete_product_db, handle_products},
+    AppState, model::{NewProduct, Product, UpdateProduct}, product::handler::{delete_product_db, handle_product_insertion, handle_products, update_product_db},
 };
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Json, extract::{State,Path}, http::StatusCode};
 
 #[axum::debug_handler]
 pub async fn create_part(
@@ -106,4 +104,45 @@ pub async fn delete_product(State(state): State<AppState>, Json(payload): Json<i
     }
 
     Ok(StatusCode::NO_CONTENT)
+}
+
+#[axum::debug_handler]
+pub async fn update_product(
+    State(state): State<AppState>,
+    Path(product_id): Path<i32>,
+    Json(payload): Json<UpdateProduct>
+) -> Result<(StatusCode, String), (StatusCode, String)> {
+
+     let connection = state
+        .db_pool
+        .get()
+        .await
+        .expect("Failed to get DB connection from pool");
+
+    let result = connection
+        .interact(move |connection| update_product_db(connection, &product_id,payload))
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+
+   let updated_rows = match result {
+        Ok(rows) => rows,
+        Err(e) => {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                e.to_string(),
+            ));
+        }
+    };
+
+    if updated_rows == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            "Product not found".to_string(),
+        ));
+    }
+
+    Ok((
+        StatusCode::OK,
+        "Product updated successfully".to_string(),
+    ))
 }
