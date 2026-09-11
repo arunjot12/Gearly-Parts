@@ -1,7 +1,7 @@
 use crate::{
     AppState,
     model::{NewProduct, Product},
-    product::handler::{handle_product_insertion, handle_products},
+    product::handler::{handle_product_insertion,delete_product_db, handle_products},
 };
 use axum::{Json, extract::State, http::StatusCode};
 
@@ -72,4 +72,38 @@ pub async fn get_product(State(state): State<AppState>, Json(payload): Json<i32>
         Err(e) => return Err("BAD_REQUEST".to_string()),
     };
     result
+}
+
+#[axum::debug_handler]
+pub async fn delete_product(State(state): State<AppState>, Json(payload): Json<i32>) -> Result<StatusCode, (StatusCode, String)>  {
+    let connection = state
+        .db_pool
+        .get()
+        .await
+        .expect("Failed to get DB connection from pool");
+
+     let result = connection
+        .interact(move |connection| delete_product_db(connection, payload))
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Database task failed: {e}"),
+            )
+        })?
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Could not delete product: {e}"),
+            )
+        })?;
+
+     if result == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            "Product not found".to_string(),
+        ));
+    }
+
+    Ok(StatusCode::NO_CONTENT)
 }

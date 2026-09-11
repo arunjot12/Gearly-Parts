@@ -4,7 +4,7 @@ use crate::{
 };
 use axum::Json;
 use diesel::{
-    ExpressionMethods, MysqlConnection, OptionalExtension, QueryDsl, RunQueryDsl, SelectableHelper, dsl::insert_into
+    ExpressionMethods, MysqlConnection, OptionalExtension, QueryDsl, QueryResult, RunQueryDsl, SelectableHelper, dsl::insert_into,
 };
 use thiserror::Error;
 
@@ -57,4 +57,14 @@ pub fn handle_products(
     .map_err(|e| e.to_string())?;
 
     Ok(Json(products))
+}
+
+pub fn delete_product_db(
+    connection: &mut MysqlConnection,
+    product_id: i32,
+) -> QueryResult<usize> {
+    diesel::delete(
+        product::table.filter(product::id.eq(product_id)),
+    )
+    .execute(connection)
 }
